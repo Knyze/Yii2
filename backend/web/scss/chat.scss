@@ -1,0 +1,20 @@
+.messWrap {
+    display: flex;
+    flex-direction: row;
+
+    .messSend {
+        padding-left: 20px;
+        display: flex;
+        flex-direction: column;
+        
+        input {
+            width: 250px;
+        }
+        
+        button {
+            margin: 10px auto;
+            width: 100px;
+        }
+        
+    }
+}
