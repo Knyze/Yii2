@@ -12,8 +12,8 @@ class m130524_201442_init extends Migration
             $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         }
 
-        $this->createTable('user', [
-            'id' => $this->primaryKey(),
+        $this->createTable('users_tbl', [
+            'user_id' => $this->primaryKey(),
             'username' => $this->string()->notNull()->unique(),
             'auth_key' => $this->string(32)->notNull(),
             'password_hash' => $this->string()->notNull(),
@@ -28,6 +28,6 @@ class m130524_201442_init extends Migration
 
     public function down()
     {
-        $this->dropTable('user');
+        $this->dropTable('users_tbl');
     }
 }

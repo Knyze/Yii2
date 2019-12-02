@@ -3,6 +3,7 @@
 /* @var $this yii\web\View */
 
 $this->title = 'My Yii Application';
+echo \common\modules\chat\widgets\Chat::widget(['port' => 8080,]);
 ?>
 <div class="site-index">
 

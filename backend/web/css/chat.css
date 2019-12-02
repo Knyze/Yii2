@@ -1,0 +1,1 @@
+.messWrap{display:flex;flex-direction:row}.messWrap .messSend{padding-left:20px;display:flex;flex-direction:column}.messWrap .messSend input{width:250px}.messWrap .messSend button{margin:10px auto;width:100px}

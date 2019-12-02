@@ -34,7 +34,7 @@ class m191125_085334_create_project_users_tbl extends Migration
         $this->execute($sql);
         
         $this->addForeignKey('project_users_fk1', 'project_users_tbl', 'project_id', 'projects_tbl', 'project_id', 'NO ACTION');
-        $this->addForeignKey('project_users_fk2', 'project_users_tbl', 'user_id', 'user', 'id', 'NO ACTION');
+        $this->addForeignKey('project_users_fk2', 'project_users_tbl', 'user_id', 'users_tbl', 'user_id', 'NO ACTION');
         
     }
 

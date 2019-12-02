@@ -34,8 +34,8 @@ class m191125_084452_create_projects_tbl extends Migration
             'updated_at' => $this->integer(),
         ]);
         
-        $this->addForeignKey('projects_fk1', 'projects_tbl', 'creator_id', 'user', 'id', 'NO ACTION');
-        $this->addForeignKey('projects_fk2', 'projects_tbl', 'updater_id', 'user', 'id', 'NO ACTION');
+        $this->addForeignKey('projects_fk1', 'projects_tbl', 'creator_id', 'users_tbl', 'user_id', 'NO ACTION');
+        $this->addForeignKey('projects_fk2', 'projects_tbl', 'updater_id', 'users_tbl', 'user_id', 'NO ACTION');
             
     }
 
