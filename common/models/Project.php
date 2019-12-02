@@ -99,6 +99,11 @@ class Project extends \yii\db\ActiveRecord
         return $this->hasOne(User::className(), ['id' => 'updater_id']);
     }
 
+    public function getTasks()
+    {
+        return $this->hasMany(Task::className(), ['project_id' => 'project_id']);
+    }
+    
     /**
      * {@inheritdoc}
      * @return \common\models\query\ProjectQuery the active query used by this AR class.
