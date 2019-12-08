@@ -106,6 +106,11 @@ class Task extends \yii\db\ActiveRecord
         return $this->hasOne(User::className(), ['id' => 'updater_id']);
     }
 
+    public function getProject()
+    {
+        return $this->hasOne(Project::className(), ['project_id' => 'project_id']);
+    }
+    
     /**
      * {@inheritdoc}
      * @return \common\models\query\TaskQuery the active query used by this AR class.
