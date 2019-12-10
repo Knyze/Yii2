@@ -3,6 +3,8 @@ use yii\helpers\Html;
 
 /* @var $this \yii\web\View */
 /* @var $content string */
+
+$user = Yii::$app->getUser()->identity;
 ?>
 
 <header class="main-header">
@@ -229,17 +231,26 @@ use yii\helpers\Html;
 
                 <li class="dropdown user user-menu">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        <img src="<?= $directoryAsset ?>/img/user2-160x160.jpg" class="user-image" alt="User Image"/>
-                        <span class="hidden-xs">Alexander Pierce</span>
+                        <?= Html::img($user->getThumbUploadUrl('avatar', \common\models\User::AVATAR_PREVIEW),
+                            [
+                                'class' => 'user-image',
+                                'alt' => 'User Image',
+                            ]) ?>
+                        <span class="hidden-xs">
+                            <?= $user->username ?>
+                        </span>
                     </a>
                     <ul class="dropdown-menu">
                         <!-- User image -->
                         <li class="user-header">
-                            <img src="<?= $directoryAsset ?>/img/user2-160x160.jpg" class="img-circle"
-                                 alt="User Image"/>
-
+                            <?= Html::img($user->getThumbUploadUrl('avatar', \common\models\User::AVATAR_PREVIEW),
+                                [
+                                    'class' => 'img-circle',
+                                    'alt' => 'User Image',
+                                ]) ?>
                             <p>
-                                Alexander Pierce - Web Developer
+                                <?= $user->username ?><br>
+                                <?= $user->email ?>
                                 <small>Member since Nov. 2012</small>
                             </p>
                         </li>
