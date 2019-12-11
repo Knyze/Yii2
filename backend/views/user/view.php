@@ -2,6 +2,9 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
+use yii\grid\GridView;
+use yii\grid\SerialColumn;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\User */
@@ -57,5 +60,27 @@ $this->params['breadcrumbs'][] = $this->title;
             ]) ?>
         </div>
     </div>
+    
+    <?= GridView::widget([
+        'dataProvider' => $dataProvider,
+        'columns' => [
+            
+            [
+                'class' => SerialColumn::class,
+                'header' => 'Номер',
+            ],
+            [
+                'label' => 'Project',
+                'value' => function ($model) {
+                    return Html::a(Html::encode($model->project->title), Url::to(['project/view', 'id' => $model->project->project_id]));
+                },
+                'format' => 'raw',
+            ],
+            [
+                'label' => 'Role',
+                'value' => 'role',
+            ],
+        ],
+    ]) ?>
 
 </div>

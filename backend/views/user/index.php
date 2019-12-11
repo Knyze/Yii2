@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
+use common\models\User;
 /* @var $this yii\web\View */
 /* @var $searchModel backend\models\search\UserSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -18,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('Create User', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
-    <?php Pjax::begin(); ?>
+    <?php Pjax::begin(['timeout' => 4000]); ?>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <?= GridView::widget([
@@ -37,8 +38,9 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'label' => 'Status',
                 'attribute' => 'status',
+                'filter' => User::STATUS_LABELS,
                 'value' => function ($model) {
-                    return \common\models\User::STATUS_LABELS[$model->status];
+                    return User::STATUS_LABELS[$model->status];
                 }
             ],
             [

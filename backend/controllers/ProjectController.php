@@ -8,6 +8,8 @@ use common\models\search\ProjectSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use common\models\ProjectUser;
+use yii\data\ActiveDataProvider;
 
 /**
  * ProjectController implements the CRUD actions for Project model.
@@ -52,8 +54,16 @@ class ProjectController extends Controller
      */
     public function actionView($id)
     {
+        $model = $this->findModel($id);
+        
+        $query = ProjectUser::find()->where(['project_id' => $id]);
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+            
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $model,
+            'dataProvider' => $dataProvider,
         ]);
     }
 
@@ -86,12 +96,15 @@ class ProjectController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        //if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($this->loadModel($model) && $model->save()) {
+        //if ($this->loadModel($model) && Yii::$app->projectService->update($model)) {
             return $this->redirect(['view', 'id' => $model->project_id]);
         }
 
         return $this->render('update', [
             'model' => $model,
+            'users' => \common\models\User::find()->select('username')->indexBy('id')->column(),
         ]);
     }
 
@@ -123,5 +136,22 @@ class ProjectController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+    
+    private function loadModel($model)
+    {
+        $data = Yii::$app->request->post($model->formName());
+        $projectUsers = $data[Project::RELATION_PROJECT_USERS];
+        if ($projectUsers !== null) {
+            $model->projectUsers = [];
+            $model->projectUsers = $projectUsers;
+            //$model->projectUsers = $projectUsers === '' ? [] : $projectUsers;
+            //die(var_dump($model->projectUsers));
+            //Так и не получилось
+            //У меня php 5.6, может из-за этого?
+            //Если нет ни одной записи то нормально вставляется
+            //А если есть, то записывается 1 последняя, даже если просто редактирую
+        }
+        return $model->load(Yii::$app->request->post());
     }
 }
