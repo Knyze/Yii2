@@ -12,11 +12,27 @@ use Yii;
  * @property int $user_id
  * @property string|null $role
  *
- * @property ProjectsTbl $project
+ * @property Project $project
  * @property User $user
  */
 class ProjectUser extends \yii\db\ActiveRecord
 {
+    const ROLE_DEVELOPER = 'developer';
+    const ROLE_MANAGER = 'manager';
+    const ROLE_TESTER = 'tester';
+    
+    const ROLES = [
+        self::ROLE_DEVELOPER,
+        self::ROLE_MANAGER,
+        self::ROLE_TESTER,
+    ];
+    
+    const ROLES_LABELS = [
+        self::ROLE_DEVELOPER => 'Developer',
+        self::ROLE_MANAGER => 'Manager',
+        self::ROLE_TESTER => 'Tester',
+    ];
+    
     /**
      * {@inheritdoc}
      */
@@ -33,9 +49,9 @@ class ProjectUser extends \yii\db\ActiveRecord
         return [
             [['project_id', 'user_id'], 'required'],
             [['project_id', 'user_id'], 'integer'],
-            [['role'], 'string'],
-            [['project_id'], 'exist', 'skipOnError' => true, 'targetClass' => ProjectsTbl::className(), 'targetAttribute' => ['project_id' => 'project_id']],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
+            [['role'], 'in', 'range' => self::ROLES],
+            //[['project_id'], 'exist', 'skipOnError' => true, 'targetClass' => Project::className(), 'targetAttribute' => ['project_id' => 'project_id']],
+            //[['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
         ];
     }
 
@@ -57,7 +73,7 @@ class ProjectUser extends \yii\db\ActiveRecord
      */
     public function getProject()
     {
-        return $this->hasOne(ProjectsTbl::className(), ['project_id' => 'project_id']);
+        return $this->hasOne(Project::className(), ['project_id' => 'project_id']);
     }
 
     /**
@@ -72,6 +88,7 @@ class ProjectUser extends \yii\db\ActiveRecord
      * {@inheritdoc}
      * @return \common\models\query\ProjectUserQuery the active query used by this AR class.
      */
+    
     public static function find()
     {
         return new \common\models\query\ProjectUserQuery(get_called_class());

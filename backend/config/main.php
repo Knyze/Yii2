@@ -21,6 +21,12 @@ return [
             'identityClass' => 'common\models\User',
             'enableAutoLogin' => true,
             'identityCookie' => ['name' => '_identity-backend', 'httpOnly' => true],
+            'on '.\yii\web\User::EVENT_AFTER_LOGIN => function($event) {
+                Yii::info("Success login with id {$event->identity->getId()}", 'auth');
+            },
+            'on '.\yii\web\User::EVENT_BEFORE_LOGOUT => function($event) {
+                Yii::info("Success logout with id {$event->identity->getId()}", 'auth');
+            },
         ],
         'session' => [
             // this is the name of the session cookie used for login on the backend
@@ -32,6 +38,12 @@ return [
                 [
                     'class' => 'yii\log\FileTarget',
                     'levels' => ['error', 'warning'],
+                ],
+                [
+                    'class' => 'yii\log\FileTarget',
+                    'categories' => ['auth'],
+                    'logFile' => '@runtime/logs/auth.log',
+                    'logVars' => [],
                 ],
             ],
         ],

@@ -5,6 +5,7 @@ namespace common\models;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\behaviors\BlameableBehavior;
+use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
 
 /**
  * This is the model class for table "projects_tbl".
@@ -18,22 +19,26 @@ use yii\behaviors\BlameableBehavior;
  * @property int $created_at
  * @property int|null $updated_at
  *
- * @property ProjectUsersTbl[] $projectUsersTbls
+ * @property ProjectUsers[] $projectUsers
  * @property User $creator
  * @property User $updater
  */
 class Project extends \yii\db\ActiveRecord
 {
-    public function behaviors() {
-        return [
-            ['class' => TimestampBehavior::className()],
-            [
-                'class' => BlameableBehavior::className(),
-                'createdByAttribute' => 'creator_id',
-                'updatedByAttribute' => 'updater_id',
-            ],
-        ];
-    }
+    const RELATION_PROJECT_USERS = 'projectUsers';
+    
+    const STATUS_NOTACTIVE = 0;
+    const STATUS_ACTIVE = 1;
+    
+    const STATUSES = [
+        self::STATUS_NOTACTIVE,
+        self::STATUS_ACTIVE,
+    ];
+    
+    const STATUSES_LABELS = [
+        self::STATUS_NOTACTIVE => 'Неактивен',
+        self::STATUS_ACTIVE => 'Активен',
+    ];
     
     /**
      * {@inheritdoc}
@@ -49,9 +54,9 @@ class Project extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['title', 'description', 'active', 'creator_id', 'created_at'], 'required'],
+            [['title', 'description'], 'required'],
             [['description'], 'string'],
-            [['active', 'creator_id', 'updater_id', 'created_at', 'updated_at'], 'integer'],
+            [['active'], 'in', 'range' => self::STATUSES],
             [['title'], 'string', 'max' => 255],
             [['creator_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['creator_id' => 'id']],
             [['updater_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updater_id' => 'id']],
@@ -74,13 +79,32 @@ class Project extends \yii\db\ActiveRecord
             'updated_at' => 'Updated At',
         ];
     }
+    
+    public function behaviors() {
+        return [
+            ['class' => TimestampBehavior::className()],
+            [
+                'class' => BlameableBehavior::className(),
+                'createdByAttribute' => 'creator_id',
+                'updatedByAttribute' => 'updater_id',
+            ],
+            'saveRelations' => [
+                'class' => SaveRelationsBehavior::class,
+                //'relationKeyName' => SaveRelationsBehavior::RELATION_KEY_RELATION_NAME,
+                'relations' => [
+                    self::RELATION_PROJECT_USERS,
+                ],
+            ],
+            
+        ];
+    }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getProjectUsersTbls()
+    public function getProjectUsers()
     {
-        return $this->hasMany(ProjectUsersTbl::className(), ['project_id' => 'project_id']);
+        return $this->hasMany(ProjectUser::className(), ['project_id' => 'project_id']);
     }
 
     /**
@@ -112,4 +136,10 @@ class Project extends \yii\db\ActiveRecord
     {
         return new \common\models\query\ProjectQuery(get_called_class());
     }
+    
+    public function getUserRoles()
+    {
+        return $this->getProjectUsers()->select('role')->indexBy('user_id')->column();
+    }
+    
 }
