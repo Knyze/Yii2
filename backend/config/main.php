@@ -55,6 +55,12 @@ return [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+                'projects' => 'project/index',
+                'project/<id:\d+>' => 'project/view',
+                'project/update/<id:\d+>' => 'project/update',
+                'users' => 'user/index',
+                'user/<id:\d+>' => 'user/view',
+                'user/update/<id:\d+>' => 'user/update',
             ],
         ],
         
