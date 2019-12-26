@@ -13,7 +13,6 @@ $this->title = $model->title;
 $this->params['breadcrumbs'][] = ['label' => 'Projects', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
-//die(var_dump($dataProvider));
 ?>
 <div class="project-view">
 
@@ -33,7 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'project_id',
+            //'project_id',
             'title',
             'description:ntext',
             [
@@ -57,13 +56,14 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ]) ?>
     
+    <h3>Участники проекта</h3>
+    
     <?= GridView::widget([
-        'dataProvider' => $dataProvider,
+        'dataProvider' => $userDataProvider,
         'columns' => [
-            
             [
                 'class' => SerialColumn::class,
-                'header' => 'Номер',
+                'header' => '№',
             ],
             [
                 'label' => 'User',
@@ -78,5 +78,55 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ],
     ]) ?>
+    
+    <h3>Задачи в проекте:</h3>
+    
+    <?= GridView::widget([
+        'dataProvider' => $taskDataProvider,
+        'columns' => [
+            [
+                'class' => SerialColumn::class,
+                'header' => '№',
+            ],
+            [
+                'label' => 'Task',
+                'value' => function ($model) {
+                    return Html::a(Html::encode($model->title), Url::to(['task/view', 'id' => $model->task_id]));
+                },
+                'format' => 'raw',
+            ],
+            [
+                'label' => 'Executor',
+                'value' => function ($model) {
+                    return Html::a(Html::encode($model->executor->username), Url::to(['user/view', 'id' => $model->executor->id]));
+                },
+                'format' => 'raw',
+            ],
+            'started_at:datetime',
+            'completed_at:datetime',
+            [
+                'label' => 'Creator',
+                'value' => function ($model) {
+                    return Html::a(Html::encode($model->creator->username), Url::to(['user/view', 'id' => $model->creator->id]));
+                },
+                'format' => 'raw',
+            ],
+            [
+                'label' => 'Updater',
+                'value' => function ($model) {
+                    return Html::a(Html::encode($model->updater->username), Url::to(['user/view', 'id' => $model->updater->id]));
+                },
+                'format' => 'raw',
+            ],
+            'created_at:datetime',
+            'updated_at:datetime',
+        ],
+    ]) ?>
+    
+    <?php echo \yii2mod\comments\widgets\Comment::widget([
+    // https://github.com/yii2mod/yii2-comments
+        'model' => $model,
+        'entityIdAttribute' => 'project_id',
+    ]); ?>
 
 </div>

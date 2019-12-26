@@ -1,9 +1,11 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
 use common\models\Project;
+
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\search\ProjectSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -19,7 +21,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('Create Project', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
-    <?php Pjax::begin(['timeout' => 4000]); ?>
+    <?php Pjax::begin(['timeout' => 4000, 'enablePushState' => false]); ?>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <?= GridView::widget([
@@ -30,7 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             'project_id',
             'title',
-            'description:ntext',
+            //'description:ntext',
             [
                 'attribute' => 'active',
                 'filter' => Project::STATUSES_LABELS,
@@ -41,15 +43,31 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'label' => 'Creator',
                 'attribute' => 'creator_id',
+                'filter' => $users,
                 'value' => function ($model) {
-                    return $model->creator->username;
-                }
+                    return Html::a(Html::encode($model->creator->username), Url::to(['user/view', 'id' => $model->creator->id]));
+                },
+                'format' => 'raw',
             ],
-            //'active',
-            //'creator_id',
-            //'updater_id',
-            //'created_at',
-            //'updated_at',
+            [
+                'label' => 'Updater',
+                'attribute' => 'updater_id',
+                'filter' => $users,
+                'value' => function($model) {
+                    return Html::a(Html::encode($model->updater->username), Url::to(['user/view', 'id' => $model->updater->id]));
+                },
+                'format' => 'raw',
+            ],
+            [
+                'label' => 'Created at',
+                'attribute' => 'created_at',
+                'format' => ['datetime', 'php:d-m-Y H:i'],
+            ],
+            [
+                'label' => 'Updated at',
+                'attribute' => 'updated_at',
+                'format' => ['datetime', 'php:d-m-Y H:i'],
+            ],
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

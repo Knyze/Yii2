@@ -5,6 +5,7 @@ namespace common\services;
 
 use common\models\Project;
 use common\models\User;
+use common\models\ProjectUser;
 use yii\base\Event;
 use yii\base\Component;
 
@@ -38,8 +39,22 @@ class ProjectService extends Component
         return $project->getProjectUsers()->byUser($user->id)->select('role')->column();
     }
     
-    public function hasRole(Project $project, User $user, $role)
+    public function hasRole(Project $project, User $user, $role = null)
     {
-        return in_array($role, $this->getRoles($project, $user));
+        $roles = $this->getRoles($project, $user);
+        
+        if ($role !== null) {
+            return in_array($role, $roles);
+        } else {
+            return $roles !== [];
+        }
+        
     }
+    
+    public function hasRoleManager(User $user)
+    {
+        $projects = Project::find()->byUser($user, ProjectUser::ROLE_MANAGER)->onlyActive();
+        return $projects !== [];
+    }
+    
 }

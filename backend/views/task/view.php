@@ -15,6 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?= Html::encode($this->title) ?></h1>
 
+    <?php if ($canManage): ?>
     <p>
         <?= Html::a('Update', ['update', 'id' => $model->task_id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a('Delete', ['delete', 'id' => $model->task_id], [
@@ -25,22 +26,45 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ]) ?>
     </p>
+    <?php endif ?>
 
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
             'task_id',
+            [
+                'label' => 'Project',
+                'attribute' => 'project_id',
+                'value' => $model->project->title,
+            ],
             'title',
             'description:ntext',
-            'project_id',
-            'executor_id',
-            'started_at',
-            'completed_at',
-            'creator_id',
-            'updater_id',
-            'created_at',
-            'updated_at',
+            [
+                'label' => 'executor',
+                'attribute' => 'executor_id',
+                'value' => $model->executor->username,
+            ],
+            'started_at:datetime',
+            'completed_at:datetime',
+            [
+                'label' => 'creator',
+                'attribute' => 'creator_id',
+                'value' => $model->creator->username,
+            ],
+            [
+                'label' => 'updater',
+                'attribute' => 'updater_id',
+                'value' => $model->updater->username,
+            ],
+            'created_at:datetime',
+            'updated_at:datetime',
         ],
     ]) ?>
+    
+    <?php echo \yii2mod\comments\widgets\Comment::widget([
+    // https://github.com/yii2mod/yii2-comments
+        'model' => $model,
+        'entityIdAttribute' => 'task_id',
+    ]); ?>
 
 </div>

@@ -9,6 +9,21 @@ namespace common\models\query;
  */
 class ProjectUserQuery extends \yii\db\ActiveQuery
 {
+    public function byUser($userId, $role = null)
+    {
+        $this->andWhere(['user_id' => $userId]);
+        
+        if ($role) {
+            $this->andWhere(['role' => $role]);
+        }
+        return $this;
+    }
+    
+    public function byProject($project_id)
+    {
+        return $this->andWhere(['project_id' => $project_id]);
+    }
+    
     /*public function active()
     {
         return $this->andWhere('[[status]]=1');

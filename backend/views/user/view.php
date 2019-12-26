@@ -61,13 +61,15 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
     
+    <h3>Участие в проектах:</h3>
+    
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'columns' => [
             
             [
                 'class' => SerialColumn::class,
-                'header' => 'Номер',
+                'header' => '№',
             ],
             [
                 'label' => 'Project',
@@ -82,5 +84,10 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ],
     ]) ?>
+    
+    <?php echo \yii2mod\comments\widgets\Comment::widget([
+    // https://github.com/yii2mod/yii2-comments
+        'model' => $model,
+    ]); ?>
 
 </div>
