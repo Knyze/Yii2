@@ -7,6 +7,10 @@
         'addButtonPosition' => \unclead\multipleinput\MultipleInput::POS_HEADER,
         'columns' => [
             [
+                'name' => 'id',
+                'type' => 'hiddenInput',
+            ],
+            [
                 'name' => 'project_id',
                 'type' => 'hiddenInput',
                 'defaultValue' => $model->project_id,

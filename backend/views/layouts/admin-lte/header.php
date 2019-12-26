@@ -1,5 +1,7 @@
 <?php
 use yii\helpers\Html;
+use yii\helpers\Url;
+use yii\bootstrap\Nav;
 
 /* @var $this \yii\web\View */
 /* @var $content string */
@@ -16,6 +18,16 @@ $user = Yii::$app->getUser()->identity;
         <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
             <span class="sr-only">Toggle navigation</span>
         </a>
+        
+        <?php
+        echo Nav::widget([
+            'options' => ['class' => 'navbar-nav'],
+            'items' => [
+                ['label' => 'Users', 'url' => ['/users']],
+                ['label' => 'Projects', 'url' => ['/projects']],
+                ['label' => 'Tasks', 'url' => ['/tasks']],
+            ],
+        ]); ?>
 
         <div class="navbar-custom-menu">
 
@@ -269,7 +281,11 @@ $user = Yii::$app->getUser()->identity;
                         <!-- Menu Footer-->
                         <li class="user-footer">
                             <div class="pull-left">
-                                <a href="#" class="btn btn-default btn-flat">Profile</a>
+                                <?= Html::a(
+                                    'Profile',
+                                    Url::to(['user/view', 'id' => $user->id]),
+                                    ['class' => 'btn btn-default btn-flat']
+                                ) ?>
                             </div>
                             <div class="pull-right">
                                 <?= Html::a(

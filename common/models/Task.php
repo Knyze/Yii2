@@ -52,9 +52,8 @@ class Task extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['title', 'description', 'creator_id', 'created_at'], 'required'],
+            [['title', 'description', 'project_id'], 'required'],
             [['description'], 'string'],
-            [['project_id', 'executor_id', 'started_at', 'completed_at', 'creator_id', 'updater_id', 'created_at', 'updated_at'], 'integer'],
             [['title'], 'string', 'max' => 255],
             [['executor_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['executor_id' => 'id']],
             [['creator_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['creator_id' => 'id']],
@@ -71,7 +70,7 @@ class Task extends \yii\db\ActiveRecord
             'task_id' => 'Task ID',
             'title' => 'Title',
             'description' => 'Description',
-            'project_id' => 'Project ID',
+            'project_id' => 'Project',
             'executor_id' => 'Executor ID',
             'started_at' => 'Started At',
             'completed_at' => 'Completed At',

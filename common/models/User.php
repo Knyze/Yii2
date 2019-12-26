@@ -27,6 +27,9 @@ class User extends ActiveRecord implements IdentityInterface
     private $password;
     
     
+    const ROLE_ADMIN = 'admin';
+    const ROLE_USER =  'user';
+    
     const STATUS_DELETED = 0;
     const STATUS_INACTIVE = 9;
     const STATUS_ACTIVE = 10;
@@ -266,4 +269,20 @@ class User extends ActiveRecord implements IdentityInterface
         
         return true;
     }
+    
+    public function getAvatar()
+    {
+        return $this->getThumbUploadUrl('avatar', self::AVATAR_ICO);
+    }
+
+    public function getUsername()
+    {
+        return $this->username;
+    }
+    
+    public static function find()
+    {
+        return new \common\models\query\UserQuery(get_called_class());
+    }
+    
 }

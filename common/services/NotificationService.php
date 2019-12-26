@@ -3,13 +3,13 @@
 namespace common\services;
 
 
-class NotificationService
+class NotificationService extends \yii\base\Component
 {
     protected $emailService;
     
     public function __construct(EmailServiceInterface $emailService, array $config = [])
     {
-        //parent::__construct($config);
+        parent::__construct($config);
         $this->emailService = $emailService;
     }
     

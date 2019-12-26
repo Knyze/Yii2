@@ -3,8 +3,12 @@
 namespace frontend\controllers;
 
 use Yii;
+use common\models\User;
 use common\models\Project;
+use common\models\Task;
 use common\models\search\ProjectSearch;
+use yii\data\ActiveDataProvider;
+use common\models\ProjectUser;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -23,7 +27,6 @@ class ProjectController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['*'],
                 'rules' => [
                     [
                         'allow' => true,
@@ -48,10 +51,15 @@ class ProjectController extends Controller
     {
         $searchModel = new ProjectSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        
+        $dataProvider->query->byUser(Yii::$app->user->id);
+        
+        $users = User::find()->onlyActive();
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'users' => $users,
         ]);
     }
 
@@ -63,61 +71,21 @@ class ProjectController extends Controller
      */
     public function actionView($id)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
-    }
-
-    /**
-     * Creates a new Project model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
-    public function actionCreate()
-    {
-        $model = new Project();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->project_id]);
-        }
-
-        return $this->render('create', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Updates an existing Project model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionUpdate($id)
-    {
         $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->project_id]);
-        }
-
-        return $this->render('update', [
-            'model' => $model,
+        
+        $userDataProvider = new ActiveDataProvider([
+            'query' => ProjectUser::find()->byProject($id),
         ]);
-    }
-
-    /**
-     * Deletes an existing Project model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
+        
+        $taskDataProvider = new ActiveDataProvider([
+            'query' => Task::find()->byProject($id),
+        ]);
+            
+        return $this->render('view', [
+            'model' => $model,
+            'userDataProvider' => $userDataProvider,
+            'taskDataProvider' => $taskDataProvider,
+        ]);
     }
 
     /**

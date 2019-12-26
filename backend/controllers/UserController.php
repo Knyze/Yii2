@@ -10,6 +10,7 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use common\models\ProjectUser;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
 
 /**
  * UserController implements the CRUD actions for User model.
@@ -22,6 +23,15 @@ class UserController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => [User::ROLE_ADMIN],
+                    ],
+                ],
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -54,9 +64,8 @@ class UserController extends Controller
      */
     public function actionView($id)
     {
-        $query = ProjectUser::find()->where(['user_id' => $id]);
         $dataProvider = new ActiveDataProvider([
-            'query' => $query,
+            'query' => ProjectUser::find()->byUser($id),
         ]);
         
         return $this->render('view', [

@@ -3,8 +3,9 @@
 namespace backend\controllers;
 
 use Yii;
-use common\models\Project;
 use common\models\User;
+use common\models\Project;
+use common\models\Task;
 use common\models\search\ProjectSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -26,15 +27,10 @@ class ProjectController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['*'],
                 'rules' => [
                     [
                         'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                    [
-                        'allow' => false,
-                        'roles' => ['?'],
+                        'roles' => [User::ROLE_ADMIN],
                     ],
                 ],
             ],
@@ -55,10 +51,13 @@ class ProjectController extends Controller
     {
         $searchModel = new ProjectSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        
+        $users = User::find()->onlyActive();
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'users' => $users,
         ]);
     }
 
@@ -72,14 +71,18 @@ class ProjectController extends Controller
     {
         $model = $this->findModel($id);
         
-        $query = ProjectUser::find()->where(['project_id' => $id]);
-        $dataProvider = new ActiveDataProvider([
-            'query' => $query,
+        $userDataProvider = new ActiveDataProvider([
+            'query' => ProjectUser::find()->byProject($id),
+        ]);
+        
+        $taskDataProvider = new ActiveDataProvider([
+            'query' => Task::find()->byProject($id),
         ]);
             
         return $this->render('view', [
             'model' => $model,
-            'dataProvider' => $dataProvider,
+            'userDataProvider' => $userDataProvider,
+            'taskDataProvider' => $taskDataProvider,
         ]);
     }
 
@@ -114,8 +117,6 @@ class ProjectController extends Controller
         
         $projectUsers = $model->getUserRoles();
 
-        //if ($model->load(Yii::$app->request->post()) && $model->save()) {
-        //if ($this->loadModel($model) && Yii::$app->projectService->update($model)) {
         if ($this->loadModel($model) && $model->save()) {
             if($diffRoles = array_diff_assoc($model->getUserRoles(), $projectUsers)) {
                 foreach ($diffRoles as $userId => $diffRole) {
@@ -128,7 +129,7 @@ class ProjectController extends Controller
 
         return $this->render('update', [
             'model' => $model,
-            'users' => \common\models\User::find()->select('username')->indexBy('id')->column(),
+            'users' => User::find()->onlyActive(),
         ]);
     }
 
@@ -167,14 +168,7 @@ class ProjectController extends Controller
         $data = Yii::$app->request->post($model->formName());
         $projectUsers = $data[Project::RELATION_PROJECT_USERS];
         if ($projectUsers !== null) {
-            $model->projectUsers = [];
             $model->projectUsers = $projectUsers;
-            //$model->projectUsers = $projectUsers === '' ? [] : $projectUsers;
-            //die(var_dump($model->projectUsers));
-            //Так и не получилось
-            //У меня php 5.6, может из-за этого?
-            //Если нет ни одной записи то нормально вставляется
-            //А если есть, то записывается 1 последняя, даже если просто редактирую
         }
         return $model->load(Yii::$app->request->post());
     }
