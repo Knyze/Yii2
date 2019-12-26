@@ -4,12 +4,14 @@ namespace backend\controllers;
 
 use Yii;
 use common\models\Project;
+use common\models\User;
 use common\models\search\ProjectSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use common\models\ProjectUser;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
 
 /**
  * ProjectController implements the CRUD actions for Project model.
@@ -22,6 +24,20 @@ class ProjectController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'only' => ['*'],
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                    [
+                        'allow' => false,
+                        'roles' => ['?'],
+                    ],
+                ],
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -95,10 +111,18 @@ class ProjectController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        
+        $projectUsers = $model->getUserRoles();
 
         //if ($model->load(Yii::$app->request->post()) && $model->save()) {
-        if ($this->loadModel($model) && $model->save()) {
         //if ($this->loadModel($model) && Yii::$app->projectService->update($model)) {
+        if ($this->loadModel($model) && $model->save()) {
+            if($diffRoles = array_diff_assoc($model->getUserRoles(), $projectUsers)) {
+                foreach ($diffRoles as $userId => $diffRole) {
+                    Yii::$app->projectService->assignRole($model, User::findOne($userId), $diffRole);
+                }
+            }
+            
             return $this->redirect(['view', 'id' => $model->project_id]);
         }
 

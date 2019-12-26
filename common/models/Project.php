@@ -141,5 +141,5 @@ class Project extends \yii\db\ActiveRecord
     {
         return $this->getProjectUsers()->select('role')->indexBy('user_id')->column();
     }
-    
+            
 }
